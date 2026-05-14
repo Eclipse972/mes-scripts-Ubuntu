@@ -33,6 +33,7 @@ afficher_texte "Vidéos"
 synchronise Vidéos
 
 afficher_texte "Sauvegarde des troussseaux avec tampon de date À VENIR"
+readonly TAMPON_DATE=$(date +'%Y-%m-%d')
 
 afficher_texte "Boulot (sauvegarde secondaire)"
 synchronise Boulot
