@@ -23,9 +23,6 @@ echo "======================== Sauvegarde de mon rpertoire /home sur serveur de 
 afficher_texte "Documents"
 synchronise Documents
 
-afficher_texte "Boulot (sauvegarde secondaire)"
-synchronise Boulot
-
 afficher_texte "Images"
 synchronise Images
 
@@ -36,3 +33,6 @@ afficher_texte "Vidéos"
 synchronise Vidéos
 
 afficher_texte "Sauvegarde des troussseaux avec tampon de date À VENIR"
+
+afficher_texte "Boulot (sauvegarde secondaire)"
+synchronise Boulot
