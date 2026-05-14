@@ -23,9 +23,6 @@ echo "======================== Sauvegarde de mon rpertoire /home sur serveur de 
 afficher_texte "Documents"
 synchronise Documents
 
-afficher_texte "Obsidian"
-synchronise Obsidian
-
 afficher_texte "Boulot (sauvegarde secondaire)"
 synchronise Boulot
 
