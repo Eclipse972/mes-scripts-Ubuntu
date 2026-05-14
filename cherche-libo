@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Script: cherche-libo
+# Description: Recherche un texte dans tous les fichiers .odt du répertoire courant et ses sous-répertoires
+
+if [ "$1" = "--help" ]; then
+    echo "Utilisation: cherche-libo \"texte à rechercher\""
+    echo "Recherche le texte spécifié dans tous les fichiers .odt du répertoire courant et de ses sous-répertoires."
+    echo "Affiche la liste des fichiers contenant le texte."
+    exit 0
+fi
+
+if [ -z "$1" ]; then
+    echo "Erreur: Aucun texte spécifié."
+    echo "Utilisez cherche-libo --help pour l'aide."
+    exit 1
+fi
+
+find . -type f -name "*.odt" -exec sh -c 'unzip -p "$1" content.xml | grep -q "'"$1"'" && echo "$1"' _ {} \;

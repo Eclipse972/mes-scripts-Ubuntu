@@ -1,0 +1,165 @@
+#!/usr/bin/env python3
+"""
+grisbi-csv - Outil de nettoyage de fichiers CSV pour Grisbi
+"""
+
+import sys
+import os
+import argparse
+import re
+
+def nettoyer(ligne):
+    """
+    Nettoie une ligne CSV :
+    - ignore les lignes vides
+    - décale les cellules selon l'indentation ou le contenu
+    """
+
+    # Ignorer les lignes sans caractère alphanumérique
+    if not re.search(r'\S', ligne):
+        return None
+
+    # Ajouter ; au début si la ligne commence par ;"Total
+    if ligne.startswith(';"Total'):
+        ligne = ';' + ligne
+    
+    # Ignorer la première tabulation (4 espaces)
+    ligne = re.sub(r'"    (\S)', r'"\1', ligne)
+
+    # Décaler d'une colonne vers la droite si 2 tabulations (8 espaces)
+    ligne = re.sub(r'"        (\S)', r';"\1', ligne)
+
+    # Détection de la somme sous de chaine de caractères
+    # "           : Guillemet ouvrant (début de la chaîne CSV)
+    # (           : Début du groupe de capture n°1
+    #   -?        : Signe moins optionnel
+    #   \d{1,3}   : 1 à 3 chiffres (centaines ou unités)
+    #   (?:       : Début d'un groupe non-capturant (pour le séparateur de milliers)
+    #     [\s\xa0] : Un espace standard ou un espace insécable
+    #     \d{3}   : Exactement 3 chiffres après l'espace
+    #   )?        : Le groupe des milliers est optionnel
+    #   ,         : Une virgule littérale
+    #   \d{2}     : Exactement 2 chiffres pour les centimes
+    # )           : Fin du groupe de capture (le nombre pur)
+    #  €";        : Espace, symbole euro, guillemet fermant et point virgule final inutile
+    masque_detection_somme = r'"(-?\d{1,3}(?:[\s\xa0]\d{3})?,\d{2}) €";'
+
+    # m.group(1) récupère uniquement ce qui est entre parenthèses
+    # On supprime les espaces pour obtenir un format numérique standard (ex: 12345,67)
+    ligne = re.sub(masque_detection_somme, lambda m: m.group(1).replace(" ", "").replace("\xa0", ""), ligne)
+    
+    return ligne
+
+
+def est_fichier_texte(chemin_fichier):
+    """
+    Vérifie si le fichier est de type texte.
+    
+    Args:
+        chemin_fichier (str): Chemin vers le fichier
+        
+    Returns:
+        bool: True si c'est un fichier texte, False sinon
+    """
+    try:
+        with open(chemin_fichier, 'r', encoding='utf-8') as f:
+            f.read(512)  # Essaie de lire les premiers octets
+        return True
+    except UnicodeDecodeError:
+        return False
+    except Exception:
+        return False
+
+
+def traiter_fichier(fichier_entree):
+    """
+    Traite le fichier CSV en appliquant la fonction nettoyer() à chaque ligne.
+    
+    Args:
+        fichier_entree (str): Nom du fichier d'entrée
+    """
+    # Vérifier si le fichier existe
+    if not os.path.exists(fichier_entree):
+        print(f"Erreur : Le fichier '{fichier_entree}' n'existe pas.", file=sys.stderr)
+        sys.exit(1)
+    
+    # Vérifier si c'est un fichier (pas un dossier)
+    if not os.path.isfile(fichier_entree):
+        print(f"Erreur : '{fichier_entree}' n'est pas un fichier.", file=sys.stderr)
+        sys.exit(1)
+    
+    # Vérifier si c'est un fichier texte
+    if not est_fichier_texte(fichier_entree):
+        print(f"Erreur : '{fichier_entree}' n'est pas un fichier texte.", file=sys.stderr)
+        sys.exit(1)
+    
+    # Créer le nom du fichier de sortie
+    if fichier_entree.endswith('.csv'):
+        fichier_sortie = fichier_entree[:-4] + ' nettoyé.csv'
+    else:
+        fichier_sortie = fichier_entree + ' nettoyé.csv'
+    
+    print(f"Traitement de '{fichier_entree}'...")
+    
+    try:
+        # Lire le fichier d'entrée et écrire dans le fichier de sortie
+        with open(fichier_entree, 'r', encoding='utf-8') as f_in, \
+             open(fichier_sortie, 'w', encoding='utf-8') as f_out:
+            
+            for ligne in f_in:
+                ligne_nettoyee = nettoyer(ligne)
+                
+                # N'écrire que si la ligne n'est pas None
+                if ligne_nettoyee is not None:
+                    f_out.write(ligne_nettoyee)
+        
+        print(f"✓ Terminé !")
+        print(f"✓ Fichier créé : {fichier_sortie}")
+        
+    except Exception as e:
+        print(f"Erreur lors du traitement : {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def main():
+    """
+    Fonction principale du script.
+    """
+    parser = argparse.ArgumentParser(
+        description='Nettoie un fichier CSV pour Grisbi',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Exemples d'utilisation :
+  grisbi-csv fichier.csv          Nettoie le fichier et crée 'fichier nettoyé.csv'
+  grisbi-csv data.csv             Nettoie data.csv et crée 'data nettoyé.csv'
+  grisbi-csv --help               Affiche cette aide
+
+Le fichier de sortie est créé dans le même répertoire que le fichier d'entrée.
+Les lignes ne contenant ni lettre ni chiffre sont automatiquement supprimées.
+        """
+    )
+    
+    parser.add_argument(
+        'fichier',
+        help='Nom du fichier CSV à nettoyer'
+    )
+    
+    parser.add_argument(
+        '--version',
+        action='version',
+        version='grisbi-csv 1.0.1'
+    )
+    
+    # Si aucun argument n'est fourni, afficher l'aide
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    
+    args = parser.parse_args()
+    
+    # Traiter le fichier
+    traiter_fichier(args.fichier)
+
+
+if __name__ == '__main__':
+    main()
