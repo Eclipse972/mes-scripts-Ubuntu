@@ -20,8 +20,17 @@ synchronise() {
 # Programme principal
 echo "======================== Sauvegarde de mon rpertoire /home sur serveur de o2switch ========================"
 # Synchronisation de chaque dossier
-afficher_texte "Documents"
-synchronise Documents
+afficher_texte "Finances"
+synchronise Documents/Finances
+
+afficher_texte "Loisirs"
+synchronise Documents/Loisirs
+
+afficher_texte "Vacances"
+synchronise Documents/Vacances
+
+afficher_texte "Voiture"
+synchronise Documents/Voiture
 
 afficher_texte "Images"
 synchronise Images
