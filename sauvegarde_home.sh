@@ -1,6 +1,8 @@
 #!/bin/bash
 # Sauvegarde des dossiers importants du répertoire home sur cloud o2switch
 
+readonly TAMPON_DATE=$(date +'%Y-%m-%d')
+
 # Fonction pour afficher un texte
 # $1 : texte a afficher
 afficher_texte() {
@@ -10,47 +12,54 @@ afficher_texte() {
 }
 
 # Fonction de synchronisation de dossier
-# 	$1 : Nom du dossier source /!\ il ne doit pas contenir d'espace
-#	$2 : dossier destination (optionnel, utilise $1 par défaut)
+# 	$1 : source
 #
-# Usage : synchronise <source> <destination>
+# Usage : synchronise_dossier <source>
 #
 # Remarques :
 # 	- perso : serveur webDAV défini dans rclone.conf
-# 	- source et destination ne doivent pas contenir d'espaces
+# 	- source ne doit pas contenir d'espaces
 #	- rclone sync ne permet pas de synchroniser de fichier, il faut utiliser rclone copy à la place
-synchronise() {
-	rclone sync -v --progress ~/$1 perso:/${2:-$1} --delete-before
+synchronise_dossier() {
+	rclone sync -v --progress ~/$1 perso:/$1 --delete-before
+}
+
+# Copie un trousseau keeepass
+# 	$1 : fichier sans l'extension kdbx
+# Copie les trouseaux à la racine en ajoutant un tampon de date
+# Utilisaton : copie_trousseau <source>
+copie_trousseau() {
+	rclone copyto -v --progress ~/$1.kdbx perso:${1}_${TAMPON_DATE}.kdbx
 }
 
 # Programme principal
 echo "======================== Sauvegarde de mon répertoire /home sur serveur de o2switch ========================"
-readonly TAMPON_DATE=$(date +'%Y-%m-%d')
-afficher_texte "Sauvegarde des troussseaux avec tampon de date"
-synchronise Trousseau.kdbx Trousseau_$TAMPON_DATE.kdbx
-synchronise Trouvail.kdbx Trouvail_$TAMPON_DATE.kdbx
-synchronise satoshis.kdbx satoshis_$TAMPON_DATE.kdbx
+afficher_texte "Sauvegarde des trousseaux avec tampon de date"
+copie_trousseau Trousseau
+copie_trousseau Trouvail
+copie_trousseau satoshis
 
+# sauvegarde des dossiers non sensibles
 afficher_texte "Finances"
-synchronise Documents/Finances
+synchronise_dossier Documents/Finances
 
 afficher_texte "Loisirs"
-synchronise Documents/Loisirs
+synchronise_dossier Documents/Loisirs
 
 afficher_texte "Vacances"
-synchronise Documents/Vacances
+synchronise_dossier Documents/Vacances
 
 afficher_texte "Voiture"
-synchronise Documents/Voiture
+synchronise_dossier Documents/Voiture
 
 afficher_texte "Images"
-synchronise Images
+synchronise_dossier Images
 
 afficher_texte "Musique"
-synchronise Musique
+synchronise_dossier Musique
 
 afficher_texte "Vidéos"
-synchronise Vidéos
+synchronise_dossier Vidéos
 
 afficher_texte "Boulot (sauvegarde secondaire)"
-synchronise Boulot
+synchronise_dossier Boulot
