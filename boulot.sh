@@ -10,7 +10,8 @@ afficher_texte() {
 }
 
 # Fonction de synchronisation d'un dossier
-# $1 dossier à synchroniser
+# $1 : dossier source
+# $2 : dossier destination (optionnel, utilise $1 par défaut)
 synchronise() {
     afficher_texte $1
     rclone sync -v --progress ~/Boulot/$1/ boulot:$1/
