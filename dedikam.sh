@@ -18,7 +18,7 @@ afficher_texte() {
 # $1 suffixe de la source
 # $2 suffixe de la destination qui peut être vide
 synchronise() {
-    rsync -av --progress --delete $exclusions $SOURCE/$1 $DESTINATION/$2
+    rsync -av --progress --delete $SOURCE/$1 $DESTINATION/$2
 }
 
 echo "=== Sauvegarde vers serveur Dedikam ==="
