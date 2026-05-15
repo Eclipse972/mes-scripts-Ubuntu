@@ -10,9 +10,14 @@ afficher_texte() {
 }
 
 # Fonction de synchronisation
-# Usage : synchronise <dossier>
-#    $1 : Nom du dossier à synchroniser /!\ il ne doit pas contenir d'espace
-# perso : serveur webDAV défini dans rclone.conf
+# 	$1 : Nom du dossier source /!\ il ne doit pas contenir d'espace
+#	$2 : dossier destination (optionnel, utilise $1 par défaut)
+#
+# Usage : synchronise <source> <destination>
+#
+# Remarques :
+# 	- perso : serveur webDAV défini dans rclone.conf
+# 	- source et destination ne doivent pas contenir d'espaces
 synchronise() {
 	rclone sync -v --progress ~/$1 perso:/$1 --delete-before
 }
