@@ -4,9 +4,9 @@
 # Fonction pour afficher un texte
 # $1 : texte a afficher
 afficher_texte() {
-  echo ""
-  echo $1
-  echo "--------------------------------------------------"
+	echo ""
+	echo $1
+	echo "--------------------------------------------------"
 }
 
 # Fonction de synchronisation
@@ -14,7 +14,7 @@ afficher_texte() {
 #    $1 : Nom du dossier à synchroniser /!\ il ne doit pas contenir d'espace
 # perso : serveur webDAV défini dans rclone.conf
 synchronise() {
-  rclone sync -v --progress ~/$1 perso:/$1 --delete-before
+	rclone sync -v --progress ~/$1 perso:/$1 --delete-before
 }
 
 # Programme principal
