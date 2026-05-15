@@ -9,7 +9,7 @@ afficher_texte() {
 	echo "--------------------------------------------------"
 }
 
-# Fonction de synchronisation
+# Fonction de synchronisation de dossier
 # 	$1 : Nom du dossier source /!\ il ne doit pas contenir d'espace
 #	$2 : dossier destination (optionnel, utilise $1 par défaut)
 #
@@ -18,13 +18,19 @@ afficher_texte() {
 # Remarques :
 # 	- perso : serveur webDAV défini dans rclone.conf
 # 	- source et destination ne doivent pas contenir d'espaces
+#	- rclone sync ne permet pas de synchroniser de fichier, il faut utiliser rclone copy à la place
 synchronise() {
 	rclone sync -v --progress ~/$1 perso:/${2:-$1} --delete-before
 }
 
 # Programme principal
 echo "======================== Sauvegarde de mon répertoire /home sur serveur de o2switch ========================"
-# Synchronisation de chaque dossier
+readonly TAMPON_DATE=$(date +'%Y-%m-%d')
+afficher_texte "Sauvegarde des troussseaux avec tampon de date"
+synchronise Trousseau.kdbx Trousseau_$TAMPON_DATE.kdbx
+synchronise Trouvail.kdbx Trouvail_$TAMPON_DATE.kdbx
+synchronise satoshis.kdbx satoshis_$TAMPON_DATE.kdbx
+
 afficher_texte "Finances"
 synchronise Documents/Finances
 
@@ -45,12 +51,6 @@ synchronise Musique
 
 afficher_texte "Vidéos"
 synchronise Vidéos
-
-readonly TAMPON_DATE=$(date +'%Y-%m-%d')
-afficher_texte "Sauvegarde des troussseaux avec tampon de date"
-synchronise Trousseau.kdbx Trousseau_$TAMPON_DATE.kdbx
-synchronise Trouvail.kdbx Trouvail_$TAMPON_DATE.kdbx
-synchronise satoshis.kdbx satoshis_$TAMPON_DATE.kdbx
 
 afficher_texte "Boulot (sauvegarde secondaire)"
 synchronise Boulot
