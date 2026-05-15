@@ -19,7 +19,7 @@ afficher_texte() {
 # 	- perso : serveur webDAV défini dans rclone.conf
 # 	- source et destination ne doivent pas contenir d'espaces
 synchronise() {
-	rclone sync -v --progress ~/$1 perso:/$1 --delete-before
+	rclone sync -v --progress ~/$1 perso:/${2:-$1} --delete-before
 }
 
 # Programme principal
@@ -46,8 +46,11 @@ synchronise Musique
 afficher_texte "Vidéos"
 synchronise Vidéos
 
-afficher_texte "Sauvegarde des troussseaux avec tampon de date À VENIR"
 readonly TAMPON_DATE=$(date +'%Y-%m-%d')
+afficher_texte "Sauvegarde des troussseaux avec tampon de date"
+synchronise Trousseau.kdbx Trousseau_$TAMPON_DATE.kdbx
+synchronise Trouvail.kdbx Trouvail_$TAMPON_DATE.kdbx
+synchronise satoshis.kdbx satoshis_$TAMPON_DATE.kdbx
 
 afficher_texte "Boulot (sauvegarde secondaire)"
 synchronise Boulot
