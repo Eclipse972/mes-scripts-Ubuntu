@@ -18,7 +18,7 @@ synchronise() {
 }
 
 # Programme principal
-echo "======================== Sauvegarde de mon rpertoire /home sur serveur de o2switch ========================"
+echo "======================== Sauvegarde de mon répertoire /home sur serveur de o2switch ========================"
 # Synchronisation de chaque dossier
 afficher_texte "Finances"
 synchronise Documents/Finances
