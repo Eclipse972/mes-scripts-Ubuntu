@@ -65,8 +65,8 @@ verifie_conf() {
 
 # Chargement de la configuration locale
 if [[ ! -f "maj-site.conf" ]]; then
-    echo "Aucun fichier maj-site.conf trouvé dans ce répertoire."
-    echo "Vous devez être à la racine du projet."
+    echo "Fichier maj-site.conf absent du répertoire."
+    echo "Vous devez être à la racine du projet pour exécuter cette comamnde."
     exit 1
 fi
 
