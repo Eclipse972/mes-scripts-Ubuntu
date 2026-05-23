@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# Script global de synchronisation de mes sites
+
+# CONFIGURATION
+# Créer un fichier maj-site.conf à la racine du projet
+#
+# IMPORTANT : ajouter maj-site.conf au .gitignore du projet
+#
+# Exemple de maj-site.conf :
+#   SERVEUR="utilsateur@serveur"
+#   DOSSIER_PROD="dossiers-production"
+#   DOSSIER_DEV="dossiers-developpement"
+
+# UTILISATION
+# 1- se mettre à la racine du projet
+# 2- EVENTUELLEMENT, vérifier que le fihCier maj-site.conf est correct
+# 3- lancer une des commndes :
+#		- maj-site prod pour emttre à jour le site de production
+#		- maj-site dev pour mettre à jour le site de développement
+#		- maj-site --help pour l'aide
+
+VRAI=1
+FAUX=0
+
+synchronise() {
+    local version
+    local dossier
+    if [[ $1 -eq $VRAI ]]; then
+        version="production"
+        dossier="$DOSSIER_PROD"
+    else
+        version="développement"
+        dossier="$DOSSIER_DEV"
+    fi
+    echo "Synchronisation du site de $version"
+    rsync -e ssh -av --delete-after public/ src/ vendor/ ${SERVEUR}:~/${dossier}/
+}
+
+show_help() {
+    echo "Synchronisation du site VolÉval.net"
+    echo "Utilisation : maj-site [option]"
+    echo "option : dev pour développement, prod pour production"
+    echo "Exemple : maj-site prod pour mettre à jour le site de production"
+}
+
+verifie_conf() {
+    local manquant=0
+    if [[ -z "$SERVEUR" ]]; then
+        echo "Variable manquante dans maj-site.conf : SERVEUR"
+        manquant=1
+    fi
+    if [[ -z "$DOSSIER_PROD" ]]; then
+        echo "Variable manquante dans maj-site.conf : DOSSIER_PROD"
+        manquant=1
+    fi
+    if [[ -z "$DOSSIER_DEV" ]]; then
+        echo "Variable manquante dans maj-site.conf : DOSSIER_DEV"
+        manquant=1
+    fi
+    if [[ $manquant -eq 1 ]]; then
+        exit 1
+    fi
+}
+
+# Chargement de la configuration locale
+if [[ ! -f "maj-site.conf" ]]; then
+    echo "Aucun fichier maj-site.conf trouvé dans ce répertoire."
+    echo "Vous devez être à la racine du projet."
+    exit 1
+fi
+
+source "maj-site.conf"
+verifie_conf
+
+# Programme principal ============================================================
+case "$1" in
+    --help)
+        show_help
+        exit 0
+        ;;
+    dev|"")
+        synchronise $FAUX
+        exit 0
+        ;;
+    prod)
+        synchronise $VRAI
+        exit 0
+        ;;
+    *)
+        echo "Paramètre inconnu : '$1'"
+        echo "Utilisez --help pour l'aide."
+        exit 1
+        ;;
+esac
