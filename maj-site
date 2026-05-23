@@ -34,7 +34,7 @@ synchronise() {
         dossier="$DOSSIER_DEV"
     fi
     echo "Synchronisation du site de $version"
-    rsync -e ssh -av --delete-after public/ src/ vendor/ ${SERVEUR}:~/${dossier}/
+    rsync -e ssh -av --delete-after public src vendor ${SERVEUR}:~/${dossier}/
 }
 
 show_help() {
