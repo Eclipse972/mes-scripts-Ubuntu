@@ -23,27 +23,6 @@
 VRAI=1
 FAUX=0
 
-synchronise() {
-    local version
-    local dossier
-    if [[ $1 -eq $VRAI ]]; then
-        version="production"
-        dossier="$DOSSIER_PROD"
-    else
-        version="développement"
-        dossier="$DOSSIER_DEV"
-    fi
-    echo "Synchronisation du site de $version"
-    rsync -e ssh -av --delete-after public src vendor ${SERVEUR}:~/${dossier}/
-}
-
-show_help() {
-    echo "Synchronisation du site VolÉval.net"
-    echo "Utilisation : maj-site [option]"
-    echo "option : dev pour développement, prod pour production"
-    echo "Exemple : maj-site prod pour mettre à jour le site de production"
-}
-
 verifie_conf() {
     local manquant=0
     if [[ -z "$SERVEUR" ]]; then
@@ -63,15 +42,34 @@ verifie_conf() {
     fi
 }
 
-# Chargement de la configuration locale
-if [[ ! -f "maj-site.conf" ]]; then
-    echo "Fichier maj-site.conf absent du répertoire."
-    echo "Vous devez être à la racine du projet pour exécuter cette comamnde."
-    exit 1
-fi
+synchronise() {
+	# Chargement de la configuration locale
+	if [[ ! -f "maj-site.conf" ]]; then
+		echo "Fichier maj-site.conf absent du répertoire."
+		echo "Vous devez être à la racine du projet pour exécuter cette comamnde."
+		exit 1
+	fi
+	source "maj-site.conf"
+	verifie_conf
+    local version
+    local dossier
+    if [[ $1 -eq $VRAI ]]; then
+        version="production"
+        dossier="$DOSSIER_PROD"
+    else
+        version="développement"
+        dossier="$DOSSIER_DEV"
+    fi
+    echo "Synchronisation du site de $version"
+    rsync -e ssh -av --delete-after public src vendor ${SERVEUR}:~/${dossier}/
+}
 
-source "maj-site.conf"
-verifie_conf
+show_help() {
+    echo "Synchronisation du site VolÉval.net"
+    echo "Utilisation : maj-site [option]"
+    echo "option : dev pour développement, prod pour production"
+    echo "Exemple : maj-site prod pour mettre à jour le site de production"
+}
 
 # Programme principal ============================================================
 case "$1" in
