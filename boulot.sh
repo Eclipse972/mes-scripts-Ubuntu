@@ -25,4 +25,6 @@ synchronise Administratif
 synchronise Supports
 synchronise Pédagogie
 synchronise Cours
+synchronise Fablab
+synchronise TopSolid
 
