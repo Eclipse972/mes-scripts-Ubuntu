@@ -28,3 +28,6 @@ synchronise Cours
 synchronise Fablab
 synchronise TopSolid
 
+afficher_texte "Sauvegarde de Trouvail"
+readonly TAMPON_DATE=$(date +'%Y-%m-%d')
+rclone copyto -v --progress ~/Trouvail.kdbx perso:Trouvail_${TAMPON_DATE}.kdbx
