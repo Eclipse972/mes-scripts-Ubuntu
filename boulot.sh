@@ -1,6 +1,11 @@
 #!/bin/bash
 # sync_boulot.sh
 
+# Limitation des ressources réseau pour connexion 4G lente
+export RCLONE_TRANSFERS=1
+export RCLONE_CHECKERS=4
+export RCLONE_BWLIMIT=500k
+
 # Fonction pour afficher le texte
 # $1 : texte a afficher
 afficher_texte() {
