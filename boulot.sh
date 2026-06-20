@@ -20,6 +20,10 @@ synchronise() {
 # programme principal
 echo "=== Synchronisation vers serveur cloud du boulot ==="
 
+afficher_texte "Sauvegarde de Trouvail"
+readonly TAMPON_DATE=$(date +'%Y-%m-%d')
+rclone copyto -v --progress ~/Trouvail.kdbx perso:Trouvail_${TAMPON_DATE}.kdbx
+
 synchronise Banque
 synchronise Administratif
 synchronise Supports
@@ -28,6 +32,3 @@ synchronise Cours
 synchronise Fablab
 synchronise TopSolid
 
-afficher_texte "Sauvegarde de Trouvail"
-readonly TAMPON_DATE=$(date +'%Y-%m-%d')
-rclone copyto -v --progress ~/Trouvail.kdbx perso:Trouvail_${TAMPON_DATE}.kdbx
