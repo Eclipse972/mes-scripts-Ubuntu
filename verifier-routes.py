@@ -113,7 +113,7 @@ def short_class(fqcn: str) -> str:
 
 ROUTE_RE = re.compile(
     r"""
-    \$(?:app|group)->get\(\s*
+    \$[a-zA-Z_][a-zA-Z0-9_]*->get\(\s*
     ['"](?P<path>[^'"]*)['"]\s*,\s*
     \[\s*(?P<class>[A-Za-z0-9_\\]+)::class\s*,\s*
     ['"](?P<method>[A-Za-z0-9_]+)['"]\s*\]
@@ -121,32 +121,42 @@ ROUTE_RE = re.compile(
     re.VERBOSE,
 )
 
-GROUP_START_RE = re.compile(r"\$app->group\(\s*['\"](?P<prefix>[^'\"]*)['\"]")
+# $<var_quelconque>->group('/prefix', ...)  — insensible au nom de variable
+GROUP_START_RE = re.compile(
+    r"""\$[a-zA-Z_][a-zA-Z0-9_]*->group\(\s*['"](?P<prefix>[^'"]*)['"]""")
+
+# Ligne de fermeture d'un groupe : });  (avec espaces optionnels)
+GROUP_END_RE = re.compile(r"^\s*\}\s*\)\s*;?\s*$")
 
 
 def extract_defined_routes(content: str) -> dict[str, str]:
-    routes = {}
-    current_prefix = ""
+    routes: dict[str, str] = {}
+    prefix_stack: list[str] = []   # pile des préfixes imbriqués
 
     for line in content.splitlines():
+
+        # Ouverture d'un groupe → empiler le préfixe cumulé
         group_match = GROUP_START_RE.search(line)
-        if group_match and "$app->group(" in line:
-            current_prefix = group_match.group("prefix")
+        if group_match:
+            current = prefix_stack[-1] if prefix_stack else ""
+            prefix_stack.append(current + group_match.group("prefix"))
             continue
 
+        # Fermeture d'un groupe → dépiler
+        if GROUP_END_RE.search(line):
+            if prefix_stack:
+                prefix_stack.pop()
+            continue
+
+        # Route GET
         match = ROUTE_RE.search(line)
         if match:
-            path = match.group("path")
-            ctrl = short_class(match.group("class"))
+            path   = match.group("path")
+            ctrl   = short_class(match.group("class"))
             method = match.group("method")
-
-            if "$group->get(" in line:
-                full_path = current_prefix + path
-            else:
-                full_path = path
-
+            current_prefix = prefix_stack[-1] if prefix_stack else ""
             key = f"{ctrl}::{method}"
-            routes[key] = normalize(full_path)
+            routes[key] = normalize(current_prefix + path)
 
     return routes
 
