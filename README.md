@@ -42,7 +42,6 @@ En suivant ces recommandations, les développeurs peuvent tirer parti des forces
 ---
 
 **Références** :
-- [Bash Scripting vs. Python : Choisir le bon langage pour l'automatisation](https://nextdoorsec.com/fr/bash-scripting-vs-python-choisir-le-bon-langage-pour-lautomatisation/)
 - [Scripts Bash vs Python: Quand Choisir? Comparatif 2026](https://info.estoreab.com/bash-vs-python-system-automation)
 - [Python pour les sysadmins : automatiser son infrastructure efficacement](https://www.shpv.fr/blog/python-scripting-sysadmin/)
 - [Pour les développeurs tombés dans le pythonisme – Parfois, les scripts Bash sont plus rapides et puissants](https://blog.mikihands.com/fr/whitedec/2025/8/6/python-vs-bash-scripting/)
