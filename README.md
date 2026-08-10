@@ -1,8 +1,8 @@
-# mes-scripts-Ubuntu
+# Mes scripts pour mon PC sous Ubuntu
 Liste des scripts que je développe dans mon coin pour ma faciliter la tâche.
 Langages : bash et python
 
-# Note de Recommandation de Codage
+# Recommandations de Codage
 
 ## Introduction
 
