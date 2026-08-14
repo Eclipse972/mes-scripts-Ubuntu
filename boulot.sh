@@ -1,6 +1,9 @@
 #!/bin/bash
 # sync_boulot.sh
 
+# Source la fonction copie_trousseau
+source "$(dirname "$0")/copie_trousseau.sh"
+
 # Limitation des ressources réseau pour connexion 4G lente
 export RCLONE_TRANSFERS=1
 export RCLONE_CHECKERS=4
@@ -25,9 +28,9 @@ synchronise() {
 # programme principal
 echo "=== Synchronisation vers serveur cloud du boulot ==="
 
-afficher_texte "Sauvegarde de Trouvail"
 readonly TAMPON_DATE=$(date +'%Y-%m-%d')
-rclone copyto -v --progress ~/Trouvail.kdbx perso:Trouvail_${TAMPON_DATE}.kdbx
+afficher_texte "Sauvegarde des trousseaux avec tampon de date"
+copie_trousseau Trouvail ~ boulot
 
 synchronise Banque
 synchronise Administratif
