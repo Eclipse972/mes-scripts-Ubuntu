@@ -65,7 +65,7 @@ synchronise() {
 }
 
 show_help() {
-    echo "Synchronisation du site VolÉval.net"
+    echo "Synchronisation du site seache.fr"
     echo "Utilisation : maj-site [option]"
     echo "option : dev pour développement, prod pour production"
     echo "Exemple : maj-site prod pour mettre à jour le site de production"
